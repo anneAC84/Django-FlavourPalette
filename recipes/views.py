@@ -27,6 +27,35 @@ class RecipeListCreateView(APIView):
             print ('Error', e)
             return Response('An error occured',500)
         
+
+  # path for this is /recipes/<int:pk>
+class RecipeRetrieveUpdateDestroyView(APIView):
+     #Retrieve
+     def get(self, request,id):
+        try:
+             recipe = Recipe.objects.get(pk=id)
+             serialized_recipe = RecipeSerializer(recipe)
+             return Response(serialized_recipe.data)
+        except Recipe.DoesNotExist as e:
+             print(e)
+             return Response({'message': 'Recipe not found'}, 404)
+        except Exception as e:
+             print(e.__class__.__name)
+             return Response({'message': 'An unknown error has occured'}, 500)
+       
+            
+     
+
+      #Update
+     def put(self, request,id):
+         pass 
+
+     #Destroy
+     def delete(self, request,id):
+         pass    
+
+     
+        
        
         
 
