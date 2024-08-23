@@ -48,7 +48,23 @@ class RecipeRetrieveUpdateDestroyView(APIView):
 
       #Update
      def put(self, request,id):
-         pass 
+         try:
+              recipe_to_update = Recipe.objects.get(pk=id)
+              serialized_recipe = RecipeSerializer(recipe_to_update, data=request.data, partial=True)
+              if serialized_recipe.is_valid():
+                  serialized_recipe.save()
+                  return Response(serialized_recipe.data)
+              return Response(serialized_recipe.errors, 400)
+         except Recipe.DoesNotExist as e:
+             print(e)
+             return Response('Recipe not found.', 404)
+         except Exception as e:
+             print(e)
+             return Response('An unknown error occured', 500)
+         
+
+         
+
 
      #Destroy
      def delete(self, request,id):
