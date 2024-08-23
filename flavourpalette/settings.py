@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import environ
+from datetime import timedelta
 
 
 env = environ.Env()
@@ -43,8 +44,24 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'jwt_auth',
+    'rest_framework',
+    'rest_framework_simplejwt',
     'recipes'
 ]
+
+REST_FRAMEWORK = {
+
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+
+}
+
+SIMPLE_JWT = {
+  'ACCESS_TOKEN_LIFETIME': timedelta(hours=24),
+  'TOKEN_OBTAIN_SERIALIZER': 'jwt_auth.serializers.tokens.CustomObtainPairSerializer',
+  
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

@@ -1,5 +1,6 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from .models import Recipe
 from.serializers.common import RecipeSerializer
 
@@ -7,12 +8,15 @@ from.serializers.common import RecipeSerializer
 
     
 class RecipeListCreateView(APIView):
+    permission_classes = [IsAuthenticated]
     #Index Route
+    
     def get(self, request):
         recipes = Recipe.objects.all() 
         serialized_recipes = RecipeSerializer(recipes, many=True)
         print(serialized_recipes.data) 
         return Response(serialized_recipes.data)
+    
     
     # Create Route
     def post(self, request):
