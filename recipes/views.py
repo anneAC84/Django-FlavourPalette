@@ -62,13 +62,18 @@ class RecipeRetrieveUpdateDestroyView(APIView):
              print(e)
              return Response('An unknown error occured', 500)
          
-
-         
-
-
      #Destroy
      def delete(self, request,id):
-         pass    
+         try:
+              recipe_to_delete = Recipe.objects.get(pk=id)
+              recipe_to_delete.delete()
+              return Response(status=204)
+         except Recipe.DoesNotExist as e:
+             print(e)
+             return Response('Recipe not found.', 404)
+         except Exception as e:
+             print(e)
+             return Response('An unknown error occured', 500)    
 
      
         
