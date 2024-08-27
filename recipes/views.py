@@ -1,6 +1,7 @@
+from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly,AllowAny
+from rest_framework.permissions import IsAuthenticated,AllowAny
 from .models import Recipe
 from.serializers.common import RecipeSerializer
 from rest_framework.exceptions import PermissionDenied
@@ -8,12 +9,20 @@ from rest_framework.exceptions import PermissionDenied
 # Create your views here.
 
     
-class RecipeListCreateView(APIView):
+class RecipeListCreateView(generics.ListCreateAPIView):
+
+    queryset = Recipe.objects.all()
+    serializer_class = RecipeSerializer
+    
     
     def get_permissions(self):
         if self.request.method == 'GET':
             return [AllowAny()]
         return [IsAuthenticated()]
+    
+    def perform_create(self, serializer):
+        # Set the 'owner' field to the current user when creating a new recipe
+        serializer.save(created_by=self.request.user)
 
     #Index Route
     
@@ -27,22 +36,27 @@ class RecipeListCreateView(APIView):
     # Create Route
     def post(self, request):
         try:
+          
            print('request user id->', request.user.id)
-           request.data['owner'] = request.user.id
-           recipe_to_create = RecipeSerializer(data=request.data)
-           if recipe_to_create.is_valid():  
-              recipe_to_create.save()           
-              return Response(recipe_to_create.data, 201)
-           print('validation error:', recipe_to_create.errors)
-           return Response(recipe_to_create.errors,400)
+           serializer = RecipeSerializer(data=request.data, context={'request': request})
+           
+           if serializer.is_valid():
+            serializer.save()           
+            return Response(serializer.data, 201)
+           print('validation error:', serializer.errors)
+           return Response(serializer.errors, 400)
         except Exception as e:
-            print ('Error', e)
-            return Response('An error occured',500)
+           print('Error', e)
+           return Response('An error occurred', 500)
         
 
   # path for this is /recipes/<int:pk>
 class RecipeRetrieveUpdateDestroyView(APIView):
-     permission_classes = [IsAuthenticated]
+     def get_permissions(self):
+        if self.request.method == 'GET':
+            return [AllowAny()]  # Allow all users to view individual recipes
+        return [IsAuthenticated()]  # Restrict other actions to authenticated users only
+
      #Retrieve
      def get(self, request,id):
         try:
@@ -63,7 +77,7 @@ class RecipeRetrieveUpdateDestroyView(APIView):
      def put(self, request,id):
          try:
               recipe_to_update = Recipe.objects.get(pk=id)
-              if recipe_to_update.owner != request.user:
+              if recipe_to_update.created_by != request.user:
                   raise PermissionDenied()
 
               serialized_recipe = RecipeSerializer(recipe_to_update, data=request.data, partial=True)
@@ -86,7 +100,7 @@ class RecipeRetrieveUpdateDestroyView(APIView):
          try:
               recipe_to_delete = Recipe.objects.get(pk=id)
 
-              if recipe_to_delete.owner != request.user:
+              if recipe_to_delete.created_by != request.user:
                   raise PermissionDenied()
               recipe_to_delete.delete()
               return Response(status=204)

@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth import password_validation
 from django.contrib.auth.hashers import make_password
 
+
 User = get_user_model()
 
 
@@ -30,6 +31,22 @@ class UserSerializer(serializers.ModelSerializer):
 
         # return data after validation
         return data
+    
+
+    def validate_email(self, value):
+        # Check if email is already taken
+        if User.objects.filter(email=value).exists():
+            print("Validation Error: Email already exists.")
+            raise serializers.ValidationError("User with this email already exists.")
+        return value
+    
+    
+    def validate_username(self, value):
+        # Check if username is already taken
+        if User.objects.filter(username=value).exists():
+            print("Validation Error: Username already exists.")
+            raise serializers.ValidationError("A user with that username already exists.")
+        return value
            
 
     class Meta:

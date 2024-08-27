@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 import environ
 from datetime import timedelta
-
+import os
 
 env = environ.Env()
 environ.Env.read_env()
@@ -46,7 +46,8 @@ INSTALLED_APPS = [
     'jwt_auth',
     'rest_framework',
     'rest_framework_simplejwt',
-    'recipes'
+    'recipes',
+    'corsheaders'
 ]
 
 REST_FRAMEWORK = {
@@ -71,6 +72,12 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware'
+]
+
+
+CORS_ALLOWED_ORIGINS = [
+    'http://127.0.0.1:5173',  # Replace with your frontend URL
 ]
 
 ROOT_URLCONF = 'flavourpalette.urls'
@@ -145,7 +152,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
