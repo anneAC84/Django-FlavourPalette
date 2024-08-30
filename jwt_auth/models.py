@@ -7,6 +7,6 @@ from django.contrib.auth.models import AbstractUser
 
 class User(AbstractUser):
     email = models.EmailField(max_length=254, unique=True)
-    profile_image=models.URLField(default='http://localhost/placeholder-img.jpg')
+    profile_image=models.URLField(default='https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/thumbnails/image/placeholder-profile_1.png')
     #bookmarks = models.ManyToManyField('recipes.Recipe', related_name='bookmarked_by')
     

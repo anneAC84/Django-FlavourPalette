@@ -7,7 +7,7 @@ User = get_user_model()
 
 class Recipe(models.Model):
     title = models.CharField(max_length=50)
-    picture = models.URLField(default='http://localhost/placeholder-img.jpg')
+    picture = models.URLField(default='https://theme-assets.getbento.com/sensei/74ec6d7.sensei/assets/images/catering-item-placeholder-704x520.png')
     description = models.TextField(max_length=100)
     ingredients = models.TextField(max_length=500)
     method = models.TextField(max_length=2000)
